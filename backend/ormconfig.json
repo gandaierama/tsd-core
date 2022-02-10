@@ -1,0 +1,19 @@
+{
+	"type": "mysql",
+	"host": "mysql_mvp",
+	"port": 3306,
+	"username": "user1",
+	"password": "1234user1",
+	"database": "tsd",
+	"entities": ["dist/**/*.entity.js"],
+	"migrations": [
+		"src/database/migrations/**/*.ts"
+	],
+	"cli": {
+		"entitiesDir": "dist/**/",
+		"migrationsDir": "src/database/migrations"
+	},
+	"synchronize": true,
+	"logging": true
+}
+

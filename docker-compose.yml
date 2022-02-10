@@ -1,0 +1,84 @@
+version: "3.7"
+services:
+  mysql_mvp: 
+    container_name: mysql_mvp
+    restart: always
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=user1
+      - MYSQL_PASSWORD=1234user1
+      - MYSQL_DATABASE=tsd
+    ports:
+    - "3306:3306"
+    volumes:
+    - mysql_mvp:/var/lib/mysql
+    networks:
+      - core_service_network_mvp
+  redis:
+    container_name: redis
+    restart: always
+    image: redis:6.0-alpine
+    expose:
+      - "6379"
+    volumes:
+      - redis_mvp:/data
+    networks:
+      - core_service_network_mvp
+  frontend:
+    command: npm start
+    container_name: frontend
+    build: ./frontend
+    environment:
+      - APP_ENV=development
+      - APP_PORT=3000
+    volumes: 
+        - frontend:/frontend/
+    working_dir: /var/www/frontend
+    ports:
+      - 3000:3000
+    networks:
+      - core_service_network_mvp
+  backend:
+    command: npm start
+    container_name: backend
+    build: ./backend
+    environment:
+      - APP_ENV=development
+      - APP_PORT=9000
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=user1
+      - MYSQL_PASSWORD=1234user1
+      - MYSQL_DATABASE=tsd
+    volumes: 
+        - backend:/backend/
+    working_dir: /var/www/backend
+    ports:
+      - 9000:9000
+    networks:
+      - core_service_network_mvp
+  nginx_mvp:
+    build: ./
+    container_name: nginx_mvp
+    ports:
+      - 80:80
+      - 443:443
+      - 3306:3306
+    networks:
+      - core_service_network_mvp
+
+networks:
+  core_service_network_mvp:
+    driver: bridge
+    name: core_service_network_mvp
+volumes:
+  mysql_mvp:
+    name: mysql_mvp
+  redis_mvp:
+    name: redis_mvp
+  frontend:
+    name: frontend
+  backend:
+    name: backend
+  nginx_mvp:
+    name: nginx_mvp
